@@ -14,6 +14,7 @@ import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.paint.Paint
 import tornadofx.FX.Companion.runAndWait
+import java.lang.ref.WeakReference
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.Callable
@@ -38,10 +39,10 @@ open class ViewModel : Component(), ScopedInstance {
     val autocommitProperties = FXCollections.observableArrayList<ObservableValue<out Any>>()
 
     companion object {
-        val propertyToViewModel = WeakHashMap<Observable, ViewModel>()
-        val propertyToFacade = WeakHashMap<Observable, Property<*>>()
-        fun getViewModelForProperty(property: Observable): ViewModel? = propertyToViewModel[property]
-        fun getFacadeForProperty(property: Observable): Property<*>? = propertyToFacade[property]
+        val propertyToViewModel = WeakHashMap<Observable, WeakReference<ViewModel>>()
+        val propertyToFacade = WeakHashMap<Observable, WeakReference<out Property<*>>>()
+        fun getViewModelForProperty(property: Observable): ViewModel? = propertyToViewModel[property]?.get()
+        fun getFacadeForProperty(property: Observable): Property<*>? = propertyToFacade[property]?.get()
 
         /**
          * Register the combination of a property that has been bound to a property
@@ -51,8 +52,8 @@ open class ViewModel : Component(), ScopedInstance {
         fun register(property: ObservableValue<*>, possiblyFacade: ObservableValue<*>?) {
             val propertyOwner = (possiblyFacade as? Property<*>)?.bean as? ViewModel
             if (propertyOwner != null) {
-                propertyToFacade[property] = possiblyFacade
-                propertyToViewModel[property] = propertyOwner
+                propertyToFacade[property] = WeakReference(possiblyFacade)
+                propertyToViewModel[property] = WeakReference(propertyOwner)
             }
         }
     }

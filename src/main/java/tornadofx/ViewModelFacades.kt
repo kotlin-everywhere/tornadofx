@@ -6,6 +6,7 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.collections.ObservableMap
 import javafx.collections.ObservableSet
+import java.lang.ref.WeakReference
 
 interface BindingAware
 
@@ -18,8 +19,8 @@ interface BindingAware
 interface BindingAwareProperty<T> : BindingAware, Property<T> {
     fun recordBinding(observableValue: ObservableValue<*>?) {
         if (observableValue is Observable) {
-            ViewModel.propertyToFacade[observableValue] = this
-            ViewModel.propertyToViewModel[observableValue] = bean as ViewModel
+            ViewModel.propertyToFacade[observableValue] = WeakReference(this)
+            ViewModel.propertyToViewModel[observableValue] = WeakReference(bean as ViewModel)
         }
     }
 }
@@ -74,8 +75,8 @@ class BindingAwareSimpleListProperty<T>(viewModel: ViewModel, name: String?) : S
 
     fun recordBinding(observableValue: Observable?) {
         if (observableValue != null) {
-            ViewModel.propertyToFacade[observableValue] = this
-            ViewModel.propertyToViewModel[observableValue] = bean as ViewModel
+            ViewModel.propertyToFacade[observableValue] = WeakReference(this)
+            ViewModel.propertyToViewModel[observableValue] = WeakReference(bean as ViewModel)
         }
     }
 
@@ -100,8 +101,8 @@ class BindingAwareSimpleSetProperty<T>(viewModel: ViewModel, name: String?) : Si
 
     fun recordBinding(observableValue: Observable?) {
         if (observableValue != null) {
-            ViewModel.propertyToFacade[observableValue] = this
-            ViewModel.propertyToViewModel[observableValue] = bean as ViewModel
+            ViewModel.propertyToFacade[observableValue] = WeakReference(this)
+            ViewModel.propertyToViewModel[observableValue] = WeakReference(bean as ViewModel)
         }
     }
 
@@ -126,8 +127,8 @@ class BindingAwareSimpleMapProperty<S, T>(viewModel: ViewModel, name: String?) :
 
     fun recordBinding(observableValue: Observable?) {
         if (observableValue != null) {
-            ViewModel.propertyToFacade[observableValue] = this
-            ViewModel.propertyToViewModel[observableValue] = bean as ViewModel
+            ViewModel.propertyToFacade[observableValue] = WeakReference(this)
+            ViewModel.propertyToViewModel[observableValue] = WeakReference(bean as ViewModel)
         }
     }
 
